@@ -2,7 +2,7 @@
 R scripts for processing environmental light data, species determination from genome sequencing, analysis of growth rate, photosynthesis and pigment contents.
 
 R scripts – 
-1.	Seasonal light data bar charts, significance? 
+1.	Seasonal light data bar charts, significance
 2.	Coverage analysis.
 3.	Correlations between seasonal light data/coverage and grouping light data.
 4.	Extracting climate variables (Bioclim).
