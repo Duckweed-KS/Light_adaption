@@ -14,5 +14,5 @@ R scripts –
 10.	Carotenoid profiling script, boxplots and statistics.
 11.	Correlations and PCA for combined physiology.
     
-Chl fluorescence scripts:
+Chl fluorescence scripts -
 12.	Fluorcam (PSI) chl fluorescence script for light response curve.
