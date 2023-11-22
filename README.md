@@ -2,6 +2,7 @@
 R scripts for processing environmental light data, species determination from genome sequencing, analysis of growth rate, photosynthesis and pigment contents.
 
 R scripts – 
+
 1.	Seasonal light data bar charts, significance
 2.	Coverage analysis.
 3.	Correlations between seasonal light data/coverage and grouping light data.
@@ -14,5 +15,6 @@ R scripts –
 10.	Carotenoid profiling script, boxplots and statistics.
 11.	Correlations and PCA for combined physiology.
     
-Chl fluorescence scripts -
+Chl fluorescence scripts – 
+
 12.	Fluorcam (PSI) chl fluorescence script for light response curve.
