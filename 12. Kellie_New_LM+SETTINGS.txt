@@ -1,0 +1,187 @@
+TS=20ms
+;protocol body
+;version February 21, 2017
+;created by ZB
+;PSI and Lucam and NetCam compatible
+;Lightstep Protocol for Kellie (Aug 20) edited from Lorna McAusland protocol made for Laura Mar 18
+
+include default.inc  ;Includes standard options, do not remove it ! - dont forget to press 'use' before starting the protocol, these are your camera settings
+UV=0
+FAR=0
+ADD2=72
+ADD1=0
+Act2=100
+Super=80
+Act1=0
+Sensitivity=5.0
+Shutter=1
+include light.inc  ;Includes standard options, do not remove it !
+
+
+;*** Fo Measurement **************************************************
+F0duration = 5s
+F0measure = 1s
+<0,F0measure..F0duration>=>mfmsub
+<0s>=>checkPoint,"startFo"
+<F0duration - F0measure>=>checkPoint,"endFo"
+;
+;*** Saturating Pulse & Fm Measurement *******************************
+PulseDuration = 800ms;
+Fmstart = F0duration+mfmsub_length
+;
+<Fmstart>=>SatPulse(PulseDuration)
+Fmstart+<mfmsub_length, 2*mfmsub_length .. PulseDuration-mfmsub_length>=>mfmsub
+;
+<Fmstart + PulseDuration/2>=>checkPoint,"startFm"
+<Fmstart + PulseDuration - mfmsub_length>=>checkPoint,"endFm"
+<Fmstart + PulseDuration/3>=>checkPoint,"timeVisual"
+;
+;*** Actinic light Exposure *******************************
+Pause = 2*TS ; wait 20ms before starting ACT2 exposure
+ALduration1 = 60s; 1 minutes
+ALduration = 11*ALduration1 ;you want 11 sections of 60s
+;
+ALmeasure1 = ALduration1/1 ; you want a measurement every 60s
+;         
+ALstart1 = Fmstart + PulseDuration + Pause
+ALstart2 = ALstart1 + ALduration1 + Pause
+ALstart3 = ALstart2 + ALduration1 + Pause
+ALstart4 = ALstart3 + ALduration1 + Pause
+ALstart5 = ALstart4 + ALduration1 + Pause
+ALstart6 = ALstart5 + ALduration1 + Pause
+ALstart7 = ALstart6 + ALduration1 + Pause
+ALstart8 = ALstart7 + ALduration1 + Pause
+ALstart9 = ALstart8 + ALduration1 + Pause
+ALstart10 = ALstart9 + ALduration1 + Pause
+ALstart11 = ALstart10 + ALduration1 + Pause
+
+
+; you want eleven steps of PPFD, remember these are in percentage and you need to check the light with a PAR meter
+<ALstart1 - TS>=>SI_Act2(5) ; wait 20ms and then increase to approx. N. PPFD
+<ALstart2 - TS>=>SI_Act2(10); approx. N. PPFD
+<ALstart3 - TS>=>SI_Act2(20); approx. N. PPFD
+<ALstart4 - TS>=>SI_Act2(30); approx. N. PPFD
+<ALstart5 - TS>=>SI_Act2(40); approx. N. PPFD
+<ALstart6 - TS>=>SI_Act2(50); approx. N. PPFD
+<ALstart7 - TS>=>SI_Act2(60); approx. N. PPFD
+<ALstart8 - TS>=>SI_Act2(70); approx. N. PPFD
+<ALstart9 - TS>=>SI_Act2(80); approx. N. PPFD
+<ALstart10 - TS>=>SI_Act2(90); approx. N. PPFD
+<ALstart11 - TS>=>SI_Act2(100); approx. N. PPFD
+
+;
+<ALstart1> => act2(ALduration)
+;
+;******* Kautsky Effect Measurement **********************************                
+;
+;<ALstart1>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;<ALstart2>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;<ALstart3>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;<ALstart4>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;<ALstart5>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;<ALstart6>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;<ALstart7>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;<ALstart8>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;<ALstart9>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;<ALstart10>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;<ALstart11>#<TS, TS + ALmeasure1 ..ALduration1-2*PulseDuration>=>mfmsub
+;
+;******************* Ft'& Fm' definition **********************************
+PulseLmeasure = 60s
+PulseLStart = ALstart1 + PulseLmeasure - 2*PulseDuration - mfmsub_length
+PulseL = <PulseLStart,PulseLStart + PulseLmeasure..ALstart1 + ALduration - PulseDuration+mfmsub_length>
+;
+PulseL=>SatPulse(PulseDuration)
+PulseL#<mfmsub_length>=>avgstart
+PulseL#<mfmsub_length, 2*mfmsub_length .. PulseDuration-mfmsub_length>=>mfmsub
+PulseL#<PulseDuration-mfmsub_length>=>avgstop
+;
+PulseL#<PulseDuration + mfmsub_length>=>mfmsub
+;
+FtL = PulseL - PulseDuration/2 - mfmsub_length
+FtL#<mfmsub_length>=>avgstart
+FtL#<mfmsub_length, 2*mfmsub_length..PulseDuration/2>=>mfmsub
+FtL#<PulseDuration/2>=>avgstop
+;
+;
+Last = ALstart1 + ALduration + 2*mfmsub_length
+<Last> => mfmsub
+;----------------------------------------------------------------------------
+;
+;***************  Fm' definition  **************************************************
+;
+<PulseLStart + PulseDuration/2>=>checkPoint,"startFm_L1"
+<PulseLStart + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L1"
+;
+<PulseLStart + 1* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L2"
+<PulseLStart + 1* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L2"
+;
+<PulseLStart + 2* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L3"
+<PulseLStart + 2* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L3"
+;
+<PulseLStart + 3* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L4"
+<PulseLStart + 3* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L4"
+;
+<PulseLStart + 4* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L5"
+<PulseLStart + 4* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L5"
+;
+<PulseLStart + 5* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L6"
+<PulseLStart + 5* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L6"
+;
+<PulseLStart + 6* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L7"
+<PulseLStart + 6* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L7"
+;
+<PulseLStart + 7* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L8"
+<PulseLStart + 7* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L8"
+;
+<PulseLStart + 8* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L9"
+<PulseLStart + 8* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L9"
+;
+<PulseLStart + 9* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L10"
+<PulseLStart + 9* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L10"
+;
+<PulseLStart + 10* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L11"
+<PulseLStart + 10* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L11"
+;
+<PulseLStart + 11* PulseLmeasure + PulseDuration/2>=>checkPoint,"startFm_L12"
+<PulseLStart + 11* PulseLmeasure + PulseDuration - mfmsub_length>=>checkPoint,"endFm_L12"
+
+;******************* Ft' definition **********************************
+;
+<PulseLStart - PulseDuration/2>=>checkPoint,"startFt_L1"
+<PulseLStart - mfmsub_length>=>checkPoint,"endFt_L1"
+;
+<PulseLStart + 1* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L2"
+<PulseLStart + 1* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L2"
+;
+<PulseLStart + 2* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L3"
+<PulseLStart + 2* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L3"
+;
+<PulseLStart + 3* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L4"
+<PulseLStart + 3* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L4"
+;
+<PulseLStart + 4* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L5"
+<PulseLStart + 4* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L5"
+;
+<PulseLStart + 5* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L6"
+<PulseLStart + 5* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L6"
+;
+<PulseLStart + 6* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L7"
+<PulseLStart + 6* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L7"
+;
+<PulseLStart + 7* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L8"
+<PulseLStart + 7* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L8"
+;
+<PulseLStart + 8* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L9"
+<PulseLStart + 8* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L9"
+;
+<PulseLStart + 9* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L10"
+<PulseLStart + 9* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L10"
+;
+<PulseLStart + 10* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L11"
+<PulseLStart + 10* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L11"
+;
+<PulseLStart + 11* PulseLmeasure - PulseDuration/2>=>checkPoint,"startFt_L12"
+<PulseLStart + 11* PulseLmeasure - mfmsub_length>=>checkPoint,"endFt_L12"
+
+;END ******************************************************************
