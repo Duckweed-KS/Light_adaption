@@ -10,7 +10,7 @@ R scripts –
 5.	Weather/temperature/climate analysis.
 6.	Adegenet/PCA for species determination.  
 7.	Growth analysis – RGR calculations, biomass, line plots.
-8.	Photosynthesis analysis – parameter calculations, boxplots, difference calculations.
+8.	Photosynthesis analysis – parameter calculations, boxplots, difference calculations, NPQ and phi PS II light response curves.
 9.	Chl car analysis, boxplots and difference calculations.
 10.	Carotenoid profiling script, boxplots and statistics.
 11.	Correlations and PCA for combined physiology.
